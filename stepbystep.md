@@ -9,36 +9,38 @@ For details of usb-serial-for-android*, see below site  :
 
 This document will show how to configure a Titanium project for using ADK step by step.
 
-## Prepare 
-### Setup Google API before creating a Titanium project
+## Prepare
+### Setup Google Android SDK and NDK
 
-ADK requires Google API Level 10 (or Google API Level 12).
-It is necessary to install Google API Level 10 in Titanium Studio.  
+This library requires Google API Level 10 or later and you will the Android NDK (Native Development Kit) so you can build and package it as an Android Module in the Titanium Studio.  
 
-1.	Select [*Window > Android SDK Manager*]
-2.	Check "Android 2.3.3 (API 10) > Google APIs by Google Inc." if not installed yet.
-3.	Click [*Install ...*] button
+Note : General issues of Titanium mobile for Android setup are [here](https://wiki.appcelerator.org/display/guides/Quick+Start)
 
+## Build the Titanium Module
 
-Note : General issues of Titanium mobile for Android setup are [here](https://wiki.appcelerator.org/display/guides/Quick+Start) 
+1. Setup the build.properties file according to your environment;
+2. Build and package it as an Android Module for the Titanium SDK so it can be available for all projects in your workspace.
 
 ## Create your Titanium project
+
 When you create your new Titanium project, you must setup Android SDK configuration to support ADK.  
 
 1.	Select [*File > New > Titanium Mobile Project*]
 1.	Select [*Set-up/Configure SDKs*] in "*New Titanium Mobile Project*"
 2.	"*Android SDK Home*" is set to your Android SDK home according to your own environment.
-3.	Select "*Google APIs Android 2.3.3*" or latter in "*Default Android SDK*" (sure that "Google APIs .." , not "Andeoid ..") 
-4.	Setup other elements if needed, and click [Finish] button. At that time, "*Titanium SDK version*" must be set to "*2.1.0 GA*" or latter.
+3.	Select "*Google APIs Android 2.3.3*" or later in "*Default Android SDK*" (sure that "Google APIs .." , not "Andeoid ..")
+4.	Setup other elements if needed, and click [Finish] button. At that time, "*Titanium SDK version*" must be set to "*2.1.0 GA*" or later.
 
 ## Modify your Titanium project settings
 
 ### Modify "Tiapp.xml"
+
 #### Add &lt;module&gt; tag
-To use USB Serial Module, you must add flowing &lt;module&gt; tag in &lt;modules&gt; session as same as other Titanium modules.
+
+To use USB Serial Module, add the "jp.isisredirect.usbserial" module to your project editing the "tiapp.xml" file using the Overview tab in the Titanium Studio IDE, or directly adding the flowing &lt;module&gt; tag in &lt;modules&gt; session.
 
      <modules>
-        <module platform="android" version="2.0">jp.isisredirect.adk</module>
+        <module platform="android">jp.isisredirect.usbserial</module>
      </modules>
 
 #### Example "Tiapp.xml" resulted by above
@@ -47,17 +49,18 @@ To use USB Serial Module, you must add flowing &lt;module&gt; tag in &lt;modules
 	<ti:app xmlns:ti="http://ti.appcelerator.org">
       	... skipped ....
          <modules>
-             <module platform="android" version="2.0">jp.isisredirect.adk</module>
+             <module platform="android">jp.isisredirect.usbserial</module>
          </modules>
      </ti:app>
 
 ### Add device_filter.xml
 To determine what USB device can associate with your Titanium app, some values (vendor-id and/or product-id) must be specified by &lt;usb-device&gt; tag in &lt;resources&gt; session of the device_filter.xml file.
 
-The device_filter.xml file must be located in 
-     &lt;project_dir&gt;/platform/android/res/xml/ 
+The device_filter.xml file must be located in
 
-, and must be named just "device_filter.xml".
+     <project_dir>/platform/android/res/xml/
+
+and must be named just "device_filter.xml".
 
 For example, device_filter.xml is below :  
 
@@ -84,19 +87,20 @@ Teensyduino	vendor-id="5824" product-id="1155"
 
 You should determine your values that specifies your USB device to communicate.
 
-### Add intent filter and metadata 
+### Add intent filter and metadata
 To notify device_filter infomation to Android OS and to let Android OS to launch your app when USB device is connected, you must add &lt;activity&gt; tag and intent filter to your "tiapp.xml".
 
-Here is an example: (replace <your app name>)
+Here is an example: (replace &lt;your app name&gt; with your app name and &lt;Yourappname&gt; with your app name *without spaces and with only the first letter in uppercase*)
+
 	<?xml version="1.0" encoding="UTF-8"?>
 	<ti:app xmlns:ti="http://ti.appcelerator.org">
       	... skipped ....
 	    <android xmlns:android="http://schemas.android.com/apk/res/android">
 	        <manifest>
-	            <uses-sdk android:minSdkVersion="10"/>
 	            <application>
-			 		<activity android:configChanges="keyboardHidden|orientation" 
-			 			android:label="<your app name>" android:name=".<your app name>Activity" 
+			 		<activity android:configChanges="keyboardHidden|orientation"
+			 			android:label="<your app name>"
+			 			android:name=".<Yourappname>Activity"
 			 			android:launchMode="singleTask"
 			 			android:theme="@style/Theme.Titanium">
 						<intent-filter>
@@ -106,21 +110,19 @@ Here is an example: (replace <your app name>)
 						<intent-filter>
 							<action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
 						</intent-filter>
-	
-						<meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-							android:resource="@xml/accessory_filter" />
+						<meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/device_filter"/>
 					</activity>
 	           </application>
 	        </manifest>
 	    </android>
       	... skipped ....
          <modules>
-             <module platform="android" version="2.0">jp.isisredirect.adk</module>
+             <module platform="android">jp.isisredirect.usbserial</module>
          </modules>
      </ti:app>
- 
 
-### That's all. 
+
+### That's all.
 Next, write your Titanium app by JavaScript!
 
 ## Author
@@ -158,4 +160,3 @@ This library is licensed under LGPL Version 2.1. Please see LICENSE.txt for the 
 Copyright 2011-2012, Google Inc. All Rights Reserved.
 
 Portions of this library are based on libftdi (http://www.intra2net.com/en/developer/libftdi). Please see FtdiSerialDriver.java for more information.
-

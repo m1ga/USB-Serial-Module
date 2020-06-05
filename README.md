@@ -1,12 +1,12 @@
 USB-Serial-Module
 =================
 
-USB Serial Module for Android that is a wrapper of usb-serial-for-android http://code.google.com/p/usb-serial-for-android
+USB Serial Module for Android that is a wrapper of usb-serial-for-android https://github.com/mik3y/usb-serial-for-android
 
 
 ## Description
 
-*USB Serial Module* is the wrapper module of [*usb-serial-for-android*](https://code.google.com/p/usb-serial-for-android/).
+*USB Serial Module* is the wrapper module of [*usb-serial-for-android*](https://github.com/mik3y/usb-serial-for-android).
 
 *USB Serial Module* is for communication with Arduinos and other USB serial hardware on Android.
 
@@ -14,16 +14,16 @@ If you use Titanium with USB Serial module, you can write Android app for USB se
 
 Current compatibility list is here :
 
-[CompatibleSerialDevices](https://code.google.com/p/usb-serial-for-android/wiki/CompatibleSerialDevices)
+[CompatibleSerialDevices](https://github.com/mik3y/usb-serial-for-android#compatible-devices)
 
-[CompatibleAndroidDevices](https://code.google.com/p/usb-serial-for-android/wiki/CompatibleAndroidDevices)
+[CompatibleAndroidDevices](https://github.com/mik3y/usb-serial-for-android#compatible-devices)
 
 Note: You need the OTG (USB On-the-Go) cable that connects between Android and other USB hardware.
 
-## Requrement
+## Requirement
 
 Android min-sdk: Android 2.3.3 (API Level 10)
-Titanium 2.1.0.GA
+Titanium 9.0.0.GA
 
 
 ## Accessing the USB Serial Module
@@ -32,7 +32,7 @@ To access this module from JavaScript, you would do the following:
 
   var usbserial = require("jp.isisredirect.usbserial");
 
-The usbserial variable is a reference to the Module object.	
+The usbserial variable is a reference to the Module object.
 
 ## Reference
 
@@ -143,7 +143,7 @@ true if succeeded.
 
 + void
 
-#### getDeviceName() : String 
+#### getDeviceName() : String
 
 ##### Parameters
 
@@ -193,13 +193,13 @@ device name
 + data : Titanium.Buffer
 
 ## Usage
-For details of setting configurations of your Titanium project that is necessary to use USB serial, see [Step by step](./stepbystep.html).
+For details of setting configurations of your Titanium project that is necessary to use USB serial, see [Step by step](stepbystep.md).
 Here only to show sample code for a simple explanation about the usage of USB Serial module.  
 Sample code is below:
 
 	var USBSERIAL = require('jp.isisredirect.usbserial');
 	Ti.API.info("module is => " + USBSERIAL);
-	
+
 	USBSERIAL.addEventListener(USBSERIAL.RECEIVED, function(e) {
 		conTextField.value += '\n' + e.data.length + ":" + e.data +";";
 	});
@@ -243,4 +243,3 @@ This library is licensed under LGPL Version 2.1. Please see LICENSE.txt for the 
 Copyright 2011-2012, Google Inc. All Rights Reserved.
 
 Portions of this library are based on libftdi (http://www.intra2net.com/en/developer/libftdi). Please see FtdiSerialDriver.java for more information.
-
