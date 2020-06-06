@@ -103,14 +103,12 @@ public class UsbserialModule extends KrollModule {
     private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
         @Override
         public void onRunError(Exception e) {
-            if (DBG)
-                Log.d(LCAT, "Runner stopped.");
+            Log.d(LCAT, "Runner stopped.");
         }
 
         @Override
         public void onNewData(final byte[] data) {
-            if (DBG)
-                Log.d(LCAT, "onNewData." + data.length);
+            Log.d(LCAT, "onNewData." + data.length);
             BufferProxy rec_buffer = new BufferProxy(data.length);
             rec_buffer.write(0, data, 0, data.length);
 
@@ -131,7 +129,7 @@ public class UsbserialModule extends KrollModule {
 
     @Kroll.onAppCreate
     public static void onAppCreate(TiApplication app) {
-        if (DBG) Log.d(LCAT, "inside onAppCreate");
+        Log.d(LCAT, "inside onAppCreate");
     }
 
     @Override
@@ -166,7 +164,7 @@ public class UsbserialModule extends KrollModule {
 
     private void stopIoManager() {
         if (mSerialIoManager != null) {
-            if (DBG) Log.i(LCAT, "Stopping io manager ..");
+            Log.i(LCAT, "Stopping io manager ..");
             mSerialIoManager.stop();
             mSerialIoManager = null;
         }
@@ -174,7 +172,7 @@ public class UsbserialModule extends KrollModule {
 
     private void startIoManager() {
         if (port != null) {
-            if (DBG) Log.i(LCAT, "Starting io manager ..");
+            Log.i(LCAT, "Starting io manager ..");
             mSerialIoManager = new SerialInputOutputManager(port, mListener);
             mExecutor.submit(mSerialIoManager);
         }
@@ -194,9 +192,13 @@ public class UsbserialModule extends KrollModule {
             @Kroll.argument(optional = true) int stopBits,
             @Kroll.argument(optional = true) int parity) {
 
+        KrollDict kd = new KrollDict();
         UsbManager manager = (UsbManager) TiApplication.getAppCurrentActivity().getSystemService(Context.USB_SERVICE);
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
         if (availableDrivers.isEmpty()) {
+            kd.put("message","no driver");
+            fireEvent("error", kd);
+            Log.e(LCAT, "No driver");
             return false;
         }
 
@@ -205,6 +207,9 @@ public class UsbserialModule extends KrollModule {
 
         if (connection == null) {
             // no serial device
+            Log.e(LCAT, "No connection");
+            kd.put("message","no connection");
+            fireEvent("error", kd);
             onDeviceStateChange();
             return false;
         } else {
@@ -219,7 +224,10 @@ public class UsbserialModule extends KrollModule {
                 }
 
             } catch (IOException e) {
-                if (DBG) Log.e(LCAT, "Error setting up device: " + e.getMessage(), e);
+                Log.e(LCAT, "Error setting up device: " + e.getMessage(), e);
+                kd.put("message","setup: + " +e.getMessage());
+                fireEvent("error", kd);
+
                 try {
                     port.close();
                 } catch (IOException e2) {
